@@ -1,6 +1,7 @@
 const fs = require('fs/promises');
 const path = require('path');
-const nanoid = require('nanoid');
+const {nanoid} = require('nanoid');
+
 
 const contactsPath = path.join(__dirname, 'contacts.json');
 console.log(contactsPath);
@@ -34,17 +35,17 @@ async function getContactById(id) {
     return removedContact;
 }
   
-  async function addContact(data) {
+  async function addContact({name,email,phone}) {
 
     const contacts = await listContacts();
     const newContact = {  id: nanoid(),
-    ...data };
+      name,email,phone};
     contacts.push(newContact);
   
     await fs.writeFile(contactsPath, JSON.stringify(contacts, null, 2));
     return newContact;
   }
-  async function updateContact(contactId, body) {
+  async function updateContact(contactId, data) {
     const contactIdStr = String(contactId);
     const contacts = await listContacts();
     const contactIndex = contacts.findIndex((contact) => contact.id === contactIdStr);
@@ -53,7 +54,7 @@ async function getContactById(id) {
       return null; // Контакт з таким ідентифікатором не знайдено
     }
   
-    const updatedContact = { ...contacts[contactIndex], ...body };
+    const updatedContact = { ...contacts[contactIndex], ...data };
     contacts[contactIndex] = updatedContact;
   
     await fs.writeFile(contactsPath, JSON.stringify(contacts, null, 2));

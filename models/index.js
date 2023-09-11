@@ -1,5 +1,5 @@
 const yargs = require('yargs');
-const contacts = require('./contacts');
+const contacts = require('./contacts.json');
 
 const {hideBin} = require('yargs/helpers');
 
