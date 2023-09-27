@@ -9,7 +9,7 @@ router.get("/", ctrl.getAll);
 
 
 
-router.get("/:contactId", isValidId, ctrl.getByContactId);
+router.get("/:id", isValidId, ctrl.getByContactId);
 
 router.post("/", ctrl.add);
 
