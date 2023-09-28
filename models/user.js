@@ -2,7 +2,7 @@ const { Schema, model } = require("mongoose");
 
 const Joi = require("joi");
 
-const {HandleMongooseError} = require('../helpers');
+const HandleMongooseError = require("../helpers/handleMongooseError.js");
 
 const emailValid = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
 
@@ -26,13 +26,7 @@ const userSchema = new Schema({
 
 }, { versionKey: false, timestamps:true});
 
-userSchema.post("save", function (error, doc, next) {
-    if (error.name === "MongoError" && error.code === 11000) {
-      next(new Error("Email must be unique"));
-    } else {
-      next();
-    }
-  });
+userSchema.post("save", HandleMongooseError) ;
 
 const registerShema = Joi.object({
     name:Joi.string().required(),
