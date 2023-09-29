@@ -1,7 +1,9 @@
 const { User } = require("../models/user");
 const HttpError = require("../helpers/HttpError");
 const bcrypt = require("bcryptjs");
+const token = require("../helpers/token")
 const ctrlWrapper = require("../helpers/ctrlWrapper");
+
 
 const register = async (req, res) => {
   const { email, password } = req.body;
@@ -21,6 +23,7 @@ const register = async (req, res) => {
   });
 };
 
+
 const login = async (req, res) =>{
     const { email, password } = req.body;
   const user = await User.findOne({ email });
@@ -31,12 +34,13 @@ const login = async (req, res) =>{
   if(!passwordCompare){
     throw HttpError(401, "Email or password is wrong");
   }
-  const token = "sds11ad.dad23sd.dasda13";
   
+  console.log(token);
   res.json({
     token,
   })
 }
 module.exports = {
   register: ctrlWrapper(register),
+  login:ctrlWrapper(login),
 };
