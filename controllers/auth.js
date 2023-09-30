@@ -35,7 +35,7 @@ const login = async (req, res) =>{
     throw HttpError(401, "Email or password is wrong");
   }
   
-  console.log(token);
+
   res.json({
     token,
   })

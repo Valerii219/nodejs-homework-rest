@@ -3,12 +3,12 @@ require("dotenv").config();
 
 const {SECRET_KEY} = process.env;
 const payload = {
-  id:"6515cf241c42efa7901aa92d"
+  id:"6517e5999e2bde1df407a147"
 }
 
 
-const token = jwt.sign(payload, SECRET_KEY, {expiresIn:"120h"});
+const token = jwt.sign(payload, SECRET_KEY, {expiresIn:"23h"});
 
-// console.log(token);
+
 
 module.exports = token;
