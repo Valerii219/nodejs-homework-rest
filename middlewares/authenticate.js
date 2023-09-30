@@ -2,6 +2,7 @@ const jwt = require("jsonwebtoken");
 const { User } = require("../models/user");
 require("dotenv").config();
 
+
 const HttpError = require("../helpers/HttpError");
 const { SECRET_KEY } = process.env;
 
@@ -19,6 +20,7 @@ const authenticate = async (req, res, next) => {
     if (!user) {
       next(HttpError(401, "Not authorized"));
     }
+    req.user = user;
     next();
   } catch (error) {
     console.error(error); // Вивести повну інформацію про помилку в консоль

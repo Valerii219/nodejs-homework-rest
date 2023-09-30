@@ -7,10 +7,11 @@ const HandleMongooseError = require("../helpers/handleMongooseError.js");
 const emailValid = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
 
 const userSchema = new Schema({
-    name: {
-        type: String,
-        required: true
-      },
+  subscription: {
+    type: String,
+    enum: ["starter", "pro", "business"],
+    default: "starter"
+  },
     password: {
         type: String,
         minlength:6,
@@ -22,6 +23,7 @@ const userSchema = new Schema({
         required: [true, 'Email is required'],
         unique: true,
       },
+  
 
 
 }, { versionKey: false, timestamps:true});
@@ -29,7 +31,7 @@ const userSchema = new Schema({
 userSchema.post("save", HandleMongooseError) ;
 
 const registerShema = Joi.object({
-    name:Joi.string().required(),
+  subscription:Joi.string().required(),
     email:Joi.string().pattern(emailValid).required(),
     password:Joi.string().min(6).required(),
 })
@@ -50,6 +52,5 @@ const User = model("user", userSchema);
 module.exports = {
     User,
     schemas,
-
 
 }
