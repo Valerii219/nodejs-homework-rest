@@ -5,19 +5,20 @@ const ctrl = require("../../controllers/contacts.js");
 const { addSchema } = require("../../models/contact"); // Правильний імпорт
 const { isValidId } = require("../../middlewares/isValidId");
 const authenticate = require("../../middlewares/authenticate");
+const  {checkContactOwner}  = require("../../middlewares/contactOwner");
 
 
 
 router.get("/", authenticate, ctrl.getAll);
 
-router.get("/:id", authenticate, validateBody(addSchema), isValidId, ctrl.getByContactId);
+router.get("/:id", authenticate, checkContactOwner, validateBody(addSchema), isValidId, ctrl.getByContactId);
 
-router.post("/", authenticate,  ctrl.add);
+router.post("/", authenticate,   ctrl.add);
 
-router.delete("/:id", authenticate, isValidId,  ctrl.deleteByContactId);
+router.delete("/:id", authenticate, isValidId, checkContactOwner, ctrl.deleteByContactId);
 
-router.put("/:id", authenticate, isValidId, validateBody(addSchema), ctrl.updateByContactId);
+router.put("/:id", authenticate, isValidId, checkContactOwner, validateBody(addSchema), ctrl.updateByContactId);
 
-router.patch("/:id/favorite", authenticate, isValidId,  ctrl.updateStatusContact);
+router.patch("/:id/favorite", authenticate, checkContactOwner, isValidId,  ctrl.updateStatusContact);
 
 module.exports = router;
