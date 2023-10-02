@@ -7,10 +7,10 @@ const checkContactOwner = async (req, res, next) => {
   const { id } = req.params;
 
   try {
-    const contact = await Contact.findById(id);
+    const contact = await Contact.findOne({ _id: id, owner: user._id });
 
-    // Перевірити, чи контакт існує та чи є поточний користувач його власником
-    if (!contact || contact.owner.toString() !== user._id.toString()) {
+    // Перевірити, чи контакт існує для даного користувача
+    if (!contact) {
       return res.status(403).json({ message: "Access denied" });
     }
 
