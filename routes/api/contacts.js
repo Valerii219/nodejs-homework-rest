@@ -9,11 +9,11 @@ const  {checkContactOwner}  = require("../../middlewares/contactOwner");
 
 
 
-router.get("/", authenticate, ctrl.getAll);
+router.get("/", authenticate, checkContactOwner, ctrl.getAll);
 
 router.get("/:id", authenticate, checkContactOwner, validateBody(addSchema), isValidId, ctrl.getByContactId);
 
-router.post("/", authenticate,   ctrl.add);
+router.post("/", authenticate,  checkContactOwner, ctrl.add);
 
 router.delete("/:id", authenticate, isValidId, checkContactOwner, ctrl.deleteByContactId);
 
