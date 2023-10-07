@@ -5,20 +5,20 @@ const ctrl = require("../../controllers/contacts.js");
 const { addSchema } = require("../../models/contact"); // Правильний імпорт
 const { isValidId } = require("../../middlewares/isValidId");
 const authenticate = require("../../middlewares/authenticate");
-const  {getOwner, getIdOwner, deleteIdOwner, postOwner, putIdOwner, patchFavoriteOwner }  = require("../../middlewares/contactOwner");
 
 
-router.get("/", authenticate, getOwner,  ctrl.getAll );
 
-  router.get("/:id", authenticate, getIdOwner,  validateBody(addSchema), isValidId, ctrl.getByContactId )
+router.get("/", authenticate, ctrl.getAll );
 
-  router.delete("/:id", authenticate, deleteIdOwner, isValidId,  ctrl.deleteByContactId )
+  router.get("/:id", authenticate,  validateBody(addSchema), isValidId, ctrl.getByContactId )
 
-  router.post("/", authenticate, postOwner,  ctrl.add)
+  router.delete("/:id", authenticate,  isValidId,  ctrl.deleteByContactId )
 
-router.put("/:id", authenticate, putIdOwner, isValidId,  validateBody(addSchema), ctrl.updateByContactId )
+  router.post("/", authenticate,  ctrl.add)
+
+router.put("/:id", authenticate, isValidId,  validateBody(addSchema), ctrl.updateByContactId )
 
 
-  router.patch("/:id/favorite", patchFavoriteOwner, authenticate)
+  router.patch("/:id/favorite",  authenticate)
 
 module.exports = router;
