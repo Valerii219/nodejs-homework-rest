@@ -2,10 +2,20 @@ const { User } = require("../models/user");
 const HttpError = require("../helpers/HttpError");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
+const gravatar = require("gravatar");
+const path = require("path");
+const fs = require("fs/promises");
+const Jimp = require("jimp");
+
+
+
 
 const ctrlWrapper = require("../helpers/ctrlWrapper");
 
 const {SECRET_KEY} = process.env;
+
+const avatarsDir  =path.join(__dirname, "../", "public", "avatars");
+const tmpDir = path.join(__dirname, "../", "tmp");
 
 const register = async (req, res) => {
   const { email, password } = req.body;
@@ -16,8 +26,9 @@ const register = async (req, res) => {
   }
 
   const hashPassword = await bcrypt.hash(password, 10);
+  const avatarURL = gravatar.url(email);
 
-  const newUser = await User.create({ ...req.body, password: hashPassword });
+  const newUser = await User.create({ ...req.body, password: hashPassword, avatarURL });
 
   res.status(201).json({
     name: newUser.name,
@@ -67,9 +78,53 @@ res.json({
 }
 
 
+const processAvatar = async (inputPath, outputPath) => {
+  try {
+    const image = await Jimp.read(inputPath); // Завантаження аватарки
+    await image.resize(250, 250); // Зміна розмірів на 250x250 пікселів
+    await image.write(outputPath); // Збереження обробленої аватарки
+    console.log("Аватарка успішно оброблена та змінена розмірів.");
+  } catch (error) {
+    console.error("Помилка при обробці аватарки:", error);
+  }
+};
+
+const updateAvatar = async (req, res) => {
+  const { _id } = req.user;
+  const { path: tempUpload, originalname } = req.file;
+  const filename = `${_id}_${originalname}`;
+  const tmpPath = path.join(avatarsDir, filename);
+  const resultUpload = path.join(tmpDir, filename);
+  const avatarFileName = `avatars/${filename}`; // URL для аватарки
+
+  // Обробка та зміна розміру аватарки за допомогою Jimp
+  await processAvatar(tempUpload, tmpPath);
+
+  try {
+    // Переміщення аватарки користувача з папки tmp в папку avatars
+    await fs.rename(tempUpload, resultUpload);
+
+    // Оновлення шляху до аватарки користувача в базі даних
+    await User.findByIdAndUpdate(_id, { avatarURL: avatarFileName });
+
+    res.json({
+      avatarURL: avatarFileName,
+    });
+  } catch (error) {
+    throw HttpError(500, "Avatar upload failed");
+    
+  }
+};
+
+
+
+
+
 module.exports = {
   register: ctrlWrapper(register),
   login:ctrlWrapper(login),
   getCurrent:ctrlWrapper(getCurrent),
-  logout:ctrlWrapper(logout)
+  logout:ctrlWrapper(logout),
+  updateAvatar:ctrlWrapper(updateAvatar),
+
 };
